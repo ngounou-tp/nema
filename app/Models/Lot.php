@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -35,6 +36,14 @@ class Lot extends Model
     public function uniqueIds(): array
     {
         return ['code'];
+    }
+
+    /**
+     * Use a fully random UUID (v4) rather than a time-ordered one, as the code is public.
+     */
+    public function newUniqueId(): string
+    {
+        return (string) Str::uuid();
     }
 
     public function getRouteKeyName(): string
