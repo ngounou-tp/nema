@@ -29,9 +29,10 @@ return [
     ],
 
     'ai' => [
-        'text_provider' => env('AI_TEXT_PROVIDER', 'groq'),
-        'max_tokens' => (int) env('AI_MAX_TOKENS', 800),
-        'daily_limit_per_user' => (int) env('AI_DAILY_LIMIT_PER_USER', 30),
+        // `?:` keeps the defaults when the variable is present but empty in .env.
+        'text_provider' => env('AI_TEXT_PROVIDER') ?: 'groq',
+        'max_tokens' => (int) (env('AI_MAX_TOKENS') ?: 800),
+        'daily_limit_per_user' => (int) (env('AI_DAILY_LIMIT_PER_USER') ?: 30),
     ],
 
     'groq' => [
