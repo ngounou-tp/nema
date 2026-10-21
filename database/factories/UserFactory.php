@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -27,6 +28,9 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'role' => UserRole::Buyer,
+            'region' => fake()->randomElement(['Ouest', 'Littoral', 'Centre']),
+            'phone' => '+237 6'.fake()->numerify('## ## ## ##'),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
@@ -56,5 +60,35 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
         ]);
+    }
+
+    /**
+     * Indicate that the user has the given role.
+     */
+    public function role(UserRole $role): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => $role,
+        ]);
+    }
+
+    public function producer(): static
+    {
+        return $this->role(UserRole::Producer);
+    }
+
+    public function cooperative(): static
+    {
+        return $this->role(UserRole::Cooperative);
+    }
+
+    public function buyer(): static
+    {
+        return $this->role(UserRole::Buyer);
+    }
+
+    public function admin(): static
+    {
+        return $this->role(UserRole::Admin);
     }
 }
