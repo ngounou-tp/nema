@@ -23,7 +23,12 @@ Mot de passe des comptes de démo : `nema2026`.
 
 ## Conventions
 
-- Code, noms de tables, colonnes, classes et routes **en anglais** ; textes de l'interface et réponses de l'IA **en français** (unités kg, ha, FCFA).
+- Code, noms de tables, colonnes, classes et routes **en anglais**.
+- **Application entièrement bilingue français / anglais** (les deux langues officielles du Cameroun) :
+  - aucun texte d'interface en dur : tout passe par des clés de traduction, avec une version dans `lang/fr` et une dans `lang/en` (libellés des enums : `lang/{fr,en}/enums.php`, via `label()`) ;
+  - langue par défaut `fr`, secours `en` (`config('app.supported_locales')`) ; la langue choisie par l'utilisateur est enregistrée dans `users.locale` ;
+  - l'IA répond dans la langue de l'utilisateur ; les contenus saisis par les utilisateurs (noms de produits, avis, étapes de lots) restent dans leur langue d'origine ;
+  - formats selon la langue : `fr-CM` ou `en-CM` pour les nombres et les dates ; unités kg, ha, FCFA dans les deux langues.
 - Valeurs fixes en enums PHP dans `app/Enums` (rôles, statuts, filières, grades).
 - Logique métier dans `app/Services` (scores, prévisions, clients IA) ; les contrôleurs restent fins.
 - Validation par **Form Requests**, autorisations par **Policies** (un producteur ne modifie que ses produits, une coopérative que ses membres).
@@ -37,7 +42,7 @@ Mot de passe des comptes de démo : `nema2026`.
 - Jamais de `v-html` sur du contenu généré par l'IA ; le Markdown passe par DOMPurify.
 - Uploads validés : JPEG/PNG/WebP, 5 Mo maximum, renommés, stockés hors du dossier public, métadonnées GPS supprimées.
 - Routes IA limitées (`throttle`) et plafond quotidien `AI_DAILY_LIMIT_PER_USER` ; jamais de données personnelles inutiles envoyées aux API.
-- Pas de dose de pesticide dans les réponses ; mention « Conseil généré par IA, à vérifier auprès d'un technicien agricole ».
+- Pas de dose de pesticide dans les réponses ; mention « Conseil généré par IA, à vérifier auprès d'un technicien agricole » (en anglais : « AI-generated advice, to be checked with an agricultural technician »).
 
 ## Commandes utiles
 
