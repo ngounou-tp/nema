@@ -9,13 +9,11 @@ enum UserRole: string
     case Buyer = 'buyer';
     case Admin = 'admin';
 
+    /**
+     * Translated label, in the current locale (lang/{fr,en}/enums.php).
+     */
     public function label(): string
     {
-        return match ($this) {
-            self::Producer => 'Producteur',
-            self::Cooperative => 'Coopérative / GIC',
-            self::Buyer => 'Acheteur',
-            self::Admin => 'Administrateur',
-        };
+        return __('enums.user_role.'.$this->value);
     }
 }

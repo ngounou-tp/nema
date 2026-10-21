@@ -16,20 +16,11 @@ enum Filiere: string
     case Igname = 'igname';
     case HuileDePalme = 'huile_de_palme';
 
+    /**
+     * Translated label, in the current locale (lang/{fr,en}/enums.php).
+     */
     public function label(): string
     {
-        return match ($this) {
-            self::Cacao => 'Cacao',
-            self::CafeArabica => 'Café arabica',
-            self::CafeRobusta => 'Café robusta',
-            self::Mais => 'Maïs',
-            self::Manioc => 'Manioc',
-            self::Plantain => 'Plantain',
-            self::Banane => 'Banane',
-            self::Tomate => 'Tomate',
-            self::Arachide => 'Arachide',
-            self::Igname => 'Igname',
-            self::HuileDePalme => 'Huile de palme',
-        };
+        return __('enums.filiere.'.$this->value);
     }
 }

@@ -1,12 +1,13 @@
 <?php
 
+use App\Enums\Locale;
 use App\Enums\UserRole;
 use App\Models\Cooperative;
 use App\Models\Order;
 use App\Models\Producer;
 use App\Models\User;
 
-test('a user created without a role gets the buyer role', function () {
+test('a user created without a role or language is a French-speaking buyer', function () {
     $user = User::query()->forceCreate([
         'name' => 'Arlette Ndjock',
         'email' => 'arlette@example.com',
@@ -14,6 +15,7 @@ test('a user created without a role gets the buyer role', function () {
     ]);
 
     expect($user->fresh()->role)->toBe(UserRole::Buyer)
+        ->and($user->fresh()->locale)->toBe(Locale::French)
         ->and($user->fresh()->hasRole(UserRole::Buyer))->toBeTrue()
         ->and($user->fresh()->hasRole(UserRole::Admin))->toBeFalse();
 });

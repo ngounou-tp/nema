@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\Filiere;
+use App\Enums\Locale;
 use App\Enums\OrderStatus;
 use App\Enums\QualityGrade;
 use App\Enums\UserRole;
@@ -169,17 +170,17 @@ class DemoSeeder extends Seeder
     /**
      * Additional buyers (companies and individuals) besides the demo buyer.
      *
-     * @var list<array{name: string, email: string, region: string}>
+     * @var list<array{name: string, email: string, region: string, locale?: Locale}>
      */
     private const array BUYERS = [
         ['name' => 'Douala Cocoa Processing SARL', 'email' => 'achats.dcp@nema.demo', 'region' => 'Littoral'],
-        ['name' => 'Agro-Export Wouri SA', 'email' => 'contact.agroexportwouri@nema.demo', 'region' => 'Littoral'],
+        ['name' => 'Agro-Export Wouri SA', 'email' => 'contact.agroexportwouri@nema.demo', 'region' => 'Littoral', 'locale' => Locale::English],
         ['name' => 'Supermarché Le Bon Panier', 'email' => 'appro.bonpanier@nema.demo', 'region' => 'Centre'],
         ['name' => 'Restaurant Saveurs du Mfoundi', 'email' => 'saveurs.mfoundi@nema.demo', 'region' => 'Centre'],
         ['name' => 'Boulangerie-Pâtisserie La Mie Dorée', 'email' => 'miedoree@nema.demo', 'region' => 'Littoral'],
         ['name' => 'Torréfaction des Hauts-Plateaux', 'email' => 'torrefaction.hp@nema.demo', 'region' => 'Ouest'],
         ['name' => 'Régine Etoundi (revendeuse, marché Mokolo)', 'email' => 'regine.etoundi@nema.demo', 'region' => 'Centre'],
-        ['name' => 'Christian Nkodo', 'email' => 'christian.nkodo@nema.demo', 'region' => 'Centre'],
+        ['name' => 'Christian Nkodo', 'email' => 'christian.nkodo@nema.demo', 'region' => 'Centre', 'locale' => Locale::English],
         ['name' => 'Aïcha Bello', 'email' => 'aicha.bello@nema.demo', 'region' => 'Littoral'],
         ['name' => 'Ginette Mbida (revendeuse, marché Sandaga)', 'email' => 'ginette.mbida@nema.demo', 'region' => 'Littoral'],
     ];
@@ -252,7 +253,7 @@ class DemoSeeder extends Seeder
             ->delete();
     }
 
-    private function createAccount(string $name, string $email, UserRole $role, string $region): User
+    private function createAccount(string $name, string $email, UserRole $role, string $region, Locale $locale = Locale::French): User
     {
         return User::query()->forceCreate([
             'name' => $name,
@@ -262,6 +263,7 @@ class DemoSeeder extends Seeder
             'role' => $role,
             'region' => $region,
             'phone' => $this->phone(),
+            'locale' => $locale,
         ]);
     }
 
@@ -392,7 +394,7 @@ class DemoSeeder extends Seeder
         $buyers = collect([$this->createAccount('Arlette Ndjock', self::DEMO_ACCOUNTS['buyer'], UserRole::Buyer, 'Littoral')]);
 
         foreach (self::BUYERS as $buyer) {
-            $buyers->push($this->createAccount($buyer['name'], $buyer['email'], UserRole::Buyer, $buyer['region']));
+            $buyers->push($this->createAccount($buyer['name'], $buyer['email'], UserRole::Buyer, $buyer['region'], $buyer['locale'] ?? Locale::French));
         }
 
         return $buyers;

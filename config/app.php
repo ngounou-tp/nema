@@ -78,11 +78,23 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'fr'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Supported Locales
+    |--------------------------------------------------------------------------
+    |
+    | NEMA is fully bilingual, in Cameroon's two official languages. Every
+    | interface string has a translation in lang/fr and lang/en.
+    |
+    */
+
+    'supported_locales' => ['fr', 'en'],
 
     /*
     |--------------------------------------------------------------------------

@@ -9,13 +9,11 @@ enum DiagnosisStatus: string
     case Uncertain = 'uncertain';
     case Failed = 'failed';
 
+    /**
+     * Translated label, in the current locale (lang/{fr,en}/enums.php).
+     */
     public function label(): string
     {
-        return match ($this) {
-            self::Pending => 'En cours',
-            self::Completed => 'Terminé',
-            self::Uncertain => 'Diagnostic incertain',
-            self::Failed => 'Échec',
-        };
+        return __('enums.diagnosis_status.'.$this->value);
     }
 }

@@ -9,13 +9,11 @@ enum OrderStatus: string
     case Delivered = 'delivered';
     case Cancelled = 'cancelled';
 
+    /**
+     * Translated label, in the current locale (lang/{fr,en}/enums.php).
+     */
     public function label(): string
     {
-        return match ($this) {
-            self::Pending => 'En attente',
-            self::Confirmed => 'Confirmée',
-            self::Delivered => 'Livrée',
-            self::Cancelled => 'Annulée',
-        };
+        return __('enums.order_status.'.$this->value);
     }
 }
