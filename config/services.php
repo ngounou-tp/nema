@@ -49,11 +49,6 @@ return [
         'model' => env('OPENROUTER_MODEL'),
     ],
 
-    'cloudinary' => [
-        'url' => env('CLOUDINARY_URL'),
-        'folder' => env('CLOUDINARY_FOLDER', 'nema'),
-    ],
-
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

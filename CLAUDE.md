@@ -7,7 +7,8 @@ Laravel 13 + Inertia v3 + Vue 3 (TypeScript) + Tailwind 4 + shadcn-vue platform 
 - API keys stay server-side; the browser only talks to Laravel. Never `v-html` AI output.
 - The project requires PHP 8.4 (see `composer.lock` and CI).
 - Production database is **Neon Postgres** (see `docs/production-database.md`): the app uses the pooled `pgsql` connection; run migrations with `--database=pgsql_direct`. Use the `neon-postgres` and `postgres-best-practices` skills for schema, indexes and search (full-text now, pgvector in phase 2). Local dev and tests stay on SQLite.
-- Services: AI keys under `config('services.ai|groq|gemini|openrouter')`, photos on Cloudinary (`cloudinary/cloudinary_php`, `services.cloudinary`), errors on Sentry (`sentry/sentry-laravel`), QR codes with `bacon/bacon-qr-code`, charts with `chart.js` + `vue-chartjs`, AI Markdown sanitized with `dompurify`.
+- Photos are **never stored in the database**, only their path: store them on `Storage::disk(config('filesystems.photos'))` (`local` in dev/tests, `neon` = Neon Object Storage, private, in production) and display them with `temporaryUrl()`.
+- Services: AI keys under `config('services.ai|groq|gemini|openrouter')`, errors on Sentry (`sentry/sentry-laravel`), QR codes with `bacon/bacon-qr-code`, charts with `chart.js` + `vue-chartjs`, AI Markdown sanitized with `dompurify`.
 
 <laravel-boost-guidelines>
 === foundation rules ===
