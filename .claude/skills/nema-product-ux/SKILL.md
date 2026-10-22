@@ -11,8 +11,10 @@ Use together with: `frontend-design` (visual direction), `vue-best-practices`, `
 
 ## Audience & tone
 
-- UI language: **French**, simple, short sentences, no jargon. Users are farmers and cooperative managers, often on a **mobile phone with 3G/4G**.
-- Units and formats: kg, ha, t, **FCFA** (`Intl.NumberFormat('fr-CM')`), dates in French.
+- The app is **fully bilingual, French and English** (Cameroon's two official languages). French is the default, English the fallback; the user's choice is stored in `users.locale` and a language switcher (FR / EN) is always reachable, including on public pages and the jury's « Essayer en tant que… » / "Try as…" entry.
+- Never hard-code interface text: every string goes through a translation key with both `lang/fr` and `lang/en` versions (enum labels: `label()` and `lang/{fr,en}/enums.php`). Copy in both languages is simple, short sentences, no jargon. Users are farmers and cooperative managers, often on a **mobile phone with 3G/4G**.
+- Units and formats: kg, ha, t, **FCFA**, formatted for the current locale (`Intl.NumberFormat('fr-CM' | 'en-CM')`, dates likewise).
+- AI answers and diagnoses come back in the user's language. User-entered content (product names, reviews, lot steps) is shown as written.
 - Names, villages, prices and crops in demo data must be credible for Cameroon (cacao, café, maïs, manioc, plantain, banane, tomate, arachide, igname, palmier à huile; regions Ouest, Littoral, Centre…).
 
 ## Roles (one dashboard each)
@@ -45,18 +47,18 @@ Producer photographs a sick cacao leaf → gets diagnosis + advice → publishes
 
 ## UX rules for AI features
 
-- Always show the visible notice: **« Conseil généré par IA, à vérifier auprès d'un technicien agricole »**.
+- Always show the visible notice: **« Conseil généré par IA, à vérifier auprès d'un technicien agricole »** / **"AI-generated advice, to be checked with an agricultural technician"**.
 - Never render AI output with `v-html`. If Markdown is needed, sanitize with DOMPurify.
 - Assistant answers cite sources as `[n]`; render those as readable source references. Questions are capped at 2 000 characters (show a counter); history keeps the last 10 messages.
-- Each answer has a **« Cette réponse est-elle utile ? »** feedback control.
-- Diagnosis: show a clear loading state (target < 15 s), the image preview, then the JSON as readable cards: culture, symptômes, hypothèses with confidence, actions immédiates, prévention, consulter un technicien. If confidence < 60 % show **« Diagnostic incertain »** and recommend a field agent. If `image_exploitable` is false, ask for a sharper photo of the plant.
+- Each answer has a **« Cette réponse est-elle utile ? »** / "Was this answer helpful?" feedback control.
+- Diagnosis: show a clear loading state (target < 15 s), the image preview, then the JSON as readable cards: culture, symptômes, hypothèses with confidence, actions immédiates, prévention, consulter un technicien. If confidence < 60 % show **« Diagnostic incertain »** / "Uncertain diagnosis" and recommend a field agent. If `image_exploitable` is false, ask for a sharper photo of the plant.
 - Never show pesticide doses; point to an approved technician.
 - When a provider is down or out of quota, show a clear, calm message (or the recorded fallback answer), never a raw error.
 - Uploads: JPEG/PNG/WebP, max 5 MB; validate client-side with a friendly message before upload.
 
 ## Business displays
 
-- **Supplier score /100** badge: ≥ 80 « Très fiable », 60–79 « Fiable », < 60 « À surveiller »; next to it a 2-sentence AI explanation (main strength + point to watch). The score is computed by Laravel, never by the AI.
+- **Supplier score /100** badge: ≥ 80 « Très fiable » / "Very reliable", 60–79 « Fiable » / "Reliable", < 60 « À surveiller » / "To watch"; next to it a 2-sentence AI explanation (main strength + point to watch). The score is computed by Laravel, never by the AI.
 - **Forecasts**: show a range (low–high), not a single number, and state the data is simulated in phase 1 and the advice is an estimate, not a guarantee.
 - **Traceability**: QR points to `/verifier/{uuid}`; never expose numeric DB ids in URLs. Public page shows origin, harvest date, steps, producer score.
 - An « À propos » page lists the datasets used (DigiGreen/Kenya_Agri_queries, KisanVaani/agriculture-qa-english-only, …) and their licences.

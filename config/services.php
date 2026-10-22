@@ -28,6 +28,28 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'ai' => [
+        // `?:` keeps the defaults when the variable is present but empty in .env.
+        'text_provider' => env('AI_TEXT_PROVIDER') ?: 'groq',
+        'max_tokens' => (int) (env('AI_MAX_TOKENS') ?: 800),
+        'daily_limit_per_user' => (int) (env('AI_DAILY_LIMIT_PER_USER') ?: 30),
+    ],
+
+    'groq' => [
+        'key' => env('GROQ_API_KEY'),
+        'model' => env('GROQ_MODEL'),
+    ],
+
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL'),
+    ],
+
+    'openrouter' => [
+        'key' => env('OPENROUTER_API_KEY'),
+        'model' => env('OPENROUTER_MODEL'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

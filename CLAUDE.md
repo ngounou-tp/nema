@@ -1,11 +1,59 @@
-# NEMA — agent IA agricole (Cameroun)
+# NEMA — agent IA agricole pour le Cameroun
 
-Laravel 13 + Inertia v3 + Vue 3 (TypeScript) + Tailwind 4 + shadcn-vue platform that acts as an agricultural AI agent for producers, cooperatives and buyers in Cameroon. The implementation plan is `docs/guide-implementation-nema.pdf` — treat it as the source of truth for scope, roles, screens, data model, AI integration (Groq text, Gemini vision, OpenRouter fallback, RAG on Hugging Face datasets), security and the 25 October 2026 demo.
+Plateforme web qui relie coopératives, producteurs et acheteurs camerounais, avec un agent IA (conseil agronomique, diagnostic photo, score de fiabilité, traçabilité, prévisions de prix). Démo en ligne le **25 octobre 2026**. Le plan complet est dans `docs/guide-implementation-nema.pdf` : c'est la référence pour le périmètre, les écrans et les règles.
 
-- UI and AI answers are in **French**; units kg / ha / FCFA.
-- Before any UI work, activate `nema-product-ux` plus `frontend-design`, `vue-best-practices` and `tailwindcss-development`; audit with `web-design-guidelines` and verify in a browser with `webapp-testing`.
-- API keys stay server-side; the browser only talks to Laravel. Never `v-html` AI output.
-- The project requires PHP 8.4 (see `composer.lock` and CI).
+## Rôles (`users.role`)
+
+| Rôle | Ce qu'il fait | Compte de démo |
+|---|---|---|
+| `producer` | Diagnostic des cultures, conseil IA, publication d'offres | producteur@nema.demo |
+| `cooperative` | Membres, récoltes, stocks, lots traçables | coop@nema.demo |
+| `buyer` | Recherche, score de fiabilité, commandes, scan QR (entreprise ou particulier) | acheteur@nema.demo |
+| `admin` | Modération, statistiques, journal de l'IA | admin@nema.demo |
+
+Mot de passe des comptes de démo : `nema2026`.
+
+## Stack
+
+- Laravel 13 (PHP 8.4) + Inertia v3 + Vue 3 (TypeScript) + Tailwind 4 + shadcn-vue (starter kit officiel, Fortify pour l'authentification).
+- Base de données : **SQLite en local et dans les tests**, **PostgreSQL (Neon) en production** — voir `docs/production-database.md`. En production, l'app utilise la connexion `pgsql` (pooled) et les migrations passent par `--database=pgsql_direct`.
+- IA : **Groq** pour le texte, **Gemini** pour la vision, OpenRouter en secours. Configuration dans `config('services.ai|groq|gemini|openrouter')`.
+- Photos : jamais en base, seulement leur chemin ; disque `config('filesystems.photos')` (`local` en dev, `neon` = Neon Object Storage en production), affichées par `temporaryUrl()`.
+- Autres : Sentry (erreurs), `bacon/bacon-qr-code` (QR des lots), `chart.js` + `vue-chartjs` (graphiques), `dompurify` (Markdown IA).
+
+## Conventions
+
+- Code, noms de tables, colonnes, classes et routes **en anglais**.
+- **Application entièrement bilingue français / anglais** (les deux langues officielles du Cameroun) :
+  - aucun texte d'interface en dur : tout passe par des clés de traduction, avec une version dans `lang/fr` et une dans `lang/en` (libellés des enums : `lang/{fr,en}/enums.php`, via `label()`) ;
+  - langue par défaut `fr`, secours `en` (`config('app.supported_locales')`) ; la langue choisie par l'utilisateur est enregistrée dans `users.locale` ;
+  - l'IA répond dans la langue de l'utilisateur ; les contenus saisis par les utilisateurs (noms de produits, avis, étapes de lots) restent dans leur langue d'origine ;
+  - formats selon la langue : `fr-CM` ou `en-CM` pour les nombres et les dates ; unités kg, ha, FCFA dans les deux langues.
+- Valeurs fixes en enums PHP dans `app/Enums` (rôles, statuts, filières, grades).
+- Logique métier dans `app/Services` (scores, prévisions, clients IA) ; les contrôleurs restent fins.
+- Validation par **Form Requests**, autorisations par **Policies** (un producteur ne modifie que ses produits, une coopérative que ses membres).
+- Tests **Pest** (`tests/Feature` surtout), modèles créés via leurs factories.
+- L'IA explique, conseille ou résume ; elle ne calcule jamais seule un score ou un prix (calculés en PHP).
+- Avant tout travail d'interface : skills `nema-product-ux`, `frontend-design`, `vue-best-practices`, `tailwindcss-development` ; audit avec `web-design-guidelines`, vérification dans un navigateur avec `webapp-testing`.
+
+## Sécurité
+
+- Aucune clé d'API dans le code, le dépôt ou le front : uniquement dans `.env` (ignoré par git), lue via `config/services.php`. Le navigateur ne parle qu'à Laravel.
+- Jamais de `v-html` sur du contenu généré par l'IA ; le Markdown passe par DOMPurify.
+- Uploads validés : JPEG/PNG/WebP, 5 Mo maximum, renommés, stockés hors du dossier public, métadonnées GPS supprimées.
+- Routes IA limitées (`throttle`) et plafond quotidien `AI_DAILY_LIMIT_PER_USER` ; jamais de données personnelles inutiles envoyées aux API.
+- Pas de dose de pesticide dans les réponses ; mention « Conseil généré par IA, à vérifier auprès d'un technicien agricole » (en anglais : « AI-generated advice, to be checked with an agricultural technician »).
+
+## Commandes utiles
+
+```bash
+composer setup                         # installation complète (dépendances, .env, clé, migrations, build)
+composer run dev                       # serveur Laravel + Vite
+php artisan migrate:fresh --seed       # base de démo réinitialisée (DemoSeeder)
+php artisan test --compact             # tests (lancer `npm run build` avant, pour le manifeste Vite)
+vendor/bin/pint --dirty --format agent # formatage PHP
+composer types:check                   # Larastan
+```
 
 <laravel-boost-guidelines>
 === foundation rules ===
