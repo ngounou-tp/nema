@@ -73,6 +73,15 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // AI calls journal (provider, model, tokens, duration, error): never keys or headers.
+        'ai' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/ai.log'),
+            'level' => 'info',
+            'max_files' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
         'monthly' => [
             'driver' => 'monthly',
             'path' => storage_path('logs/laravel.log'),

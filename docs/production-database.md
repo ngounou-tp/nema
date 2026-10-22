@@ -83,7 +83,7 @@ Les sessions, le cache et la file d'attente utilisent déjà le driver `database
 | `chart.js` + `vue-chartjs` | Graphiques des prévisions | — |
 | `dompurify` | Nettoyage du Markdown des réponses IA | — |
 
-Les clés IA se trouvent dans `config/services.php` (`services.ai`, `services.groq`, `services.gemini`, `services.openrouter`).
+Les clés et modèles IA se trouvent dans `config/services.php` (`services.groq`, `services.gemini`, `services.openrouter`) ; le comportement (ordre des fournisseurs, quotas, délais, mode démo) dans `config/nema.php`.
 
 ## 6. Outils pour Claude
 

@@ -28,26 +28,21 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'ai' => [
-        // `?:` keeps the defaults when the variable is present but empty in .env.
-        'text_provider' => env('AI_TEXT_PROVIDER') ?: 'groq',
-        'max_tokens' => (int) (env('AI_MAX_TOKENS') ?: 800),
-        'daily_limit_per_user' => (int) (env('AI_DAILY_LIMIT_PER_USER') ?: 30),
-    ],
-
+    // AI providers (server-side only). Behaviour settings: config/nema.php.
+    // `?:` keeps the default model when the variable is present but empty in .env.
     'groq' => [
         'key' => env('GROQ_API_KEY'),
-        'model' => env('GROQ_MODEL'),
+        'model' => env('GROQ_MODEL') ?: 'openai/gpt-oss-120b',
     ],
 
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
-        'model' => env('GEMINI_MODEL'),
+        'model' => env('GEMINI_MODEL') ?: 'gemini-3.6-flash',
     ],
 
     'openrouter' => [
         'key' => env('OPENROUTER_API_KEY'),
-        'model' => env('OPENROUTER_MODEL'),
+        'model' => env('OPENROUTER_MODEL') ?: 'google/gemma-4-31b-it:free',
     ],
 
     'slack' => [
