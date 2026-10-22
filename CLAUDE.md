@@ -17,7 +17,7 @@ Mot de passe des comptes de démo : `nema2026`.
 
 - Laravel 13 (PHP 8.4) + Inertia v3 + Vue 3 (TypeScript) + Tailwind 4 + shadcn-vue (starter kit officiel, Fortify pour l'authentification).
 - Base de données : **SQLite en local et dans les tests**, **PostgreSQL (Neon) en production** — voir `docs/production-database.md`. En production, l'app utilise la connexion `pgsql` (pooled) et les migrations passent par `--database=pgsql_direct`.
-- IA : **Groq** pour le texte, **Gemini** pour la vision, OpenRouter en secours. Configuration dans `config('services.ai|groq|gemini|openrouter')`.
+- IA : **Groq** pour le texte, **Gemini** pour la vision, OpenRouter en secours. Clés et modèles dans `config('services.groq|gemini|openrouter')`, comportement (ordre, quotas, délais, mode démo) dans `config('nema')` — voir « Couche IA ».
 - Photos : jamais en base, seulement leur chemin ; disque `config('filesystems.photos')` (`local` en dev, `neon` = Neon Object Storage en production), affichées par `temporaryUrl()`.
 - Autres : Sentry (erreurs), `bacon/bacon-qr-code` (QR des lots), `chart.js` + `vue-chartjs` (graphiques), `dompurify` (Markdown IA).
 
@@ -44,6 +44,18 @@ Mot de passe des comptes de démo : `nema2026`.
 - Routes IA limitées (`throttle`) et plafond quotidien `AI_DAILY_LIMIT_PER_USER` ; jamais de données personnelles inutiles envoyées aux API.
 - Pas de dose de pesticide dans les réponses ; mention « Conseil généré par IA, à vérifier auprès d'un technicien agricole » (en anglais : « AI-generated advice, to be checked with an agricultural technician »).
 
+## Couche IA (`app/Services/AI`)
+
+- Toujours passer par `AiManager` : `chat($messages, ['user' => $user])` et `analyzeImage($prompt, $bytes, $mime, $user)`. Les clients (`GroqClient`, `OpenRouterClient`, `GeminiClient`) ne s'appellent directement que dans `nema:ai-ping`.
+- Texte : fournisseurs essayés dans l'ordre de `nema.ai.text_providers` (`AI_TEXT_PROVIDERS`, défaut `groq,openrouter`, `gemini` possible) ; un fournisseur sans clé est ignoré. Toute erreur (429, 5xx, timeout, autre code HTTP) → fournisseur suivant ; 1 nouvel essai sur 5xx et timeout, pas sur 429. Délais : 30 s texte, 45 s vision. Tous en échec → `AiUnavailableException`.
+- Vision : Gemini seul, réponse JSON imposée ; JSON invalide → `InvalidAiJsonException`.
+- Prompts : uniquement les constantes versionnées de `PromptLibrary`, via `PromptLibrary::render(PromptLibrary::ADVISOR_V1, ['context' => …])`. `{language}` (« français » / « English ») vient de `app()->getLocale()` et ne peut pas être remplacé par une variable. Changer un texte = nouvelle constante (`ADVISOR_V2`), jamais modifier une V1.
+- Quotas : middleware `throttle:ai` (10 requêtes/min) sur toute route IA, et `AiQuota` (`AI_DAILY_LIMIT_PER_USER`, défaut 30/jour) appliqué par `AiManager` dès que `user` est passé. Réponses en cache et réponses de secours ne comptent pas.
+- Cache : requêtes identiques (messages, options, modèles, locale) gardées 24 h ; `'cache' => false` pour une conversation suivie.
+- Mode démo (`NEMA_DEMO_MODE=true`) : si tout échoue, réponse la plus proche de `storage/app/demo/fallbacks.json` (fr et en, choisie par mots-clés), avec `fallback = true` à signaler dans l'interface. Aucune réponse proche → l'exception remonte.
+- Journal : canal `ai` (`storage/logs/ai.log`) avec fournisseur, modèle, tokens, durée et erreur ; jamais de clé, d'en-tête ni de prompt.
+- Tests : `configureFakeAiProviders()` (`tests/Pest.php`) active `Http::preventStrayRequests()` et des clés factices ; `Sleep::fake()` pour les nouveaux essais.
+
 ## Commandes utiles
 
 ```bash
@@ -51,6 +63,7 @@ composer setup                         # installation complète (dépendances, .
 composer run dev                       # serveur Laravel + Vite
 php artisan migrate:fresh --seed       # base de démo réinitialisée (DemoSeeder)
 php artisan test --compact             # tests (lancer `npm run build` avant, pour le manifeste Vite)
+php artisan nema:ai-ping               # état et latence de chaque fournisseur IA (vrais appels)
 vendor/bin/pint --dirty --format agent # formatage PHP
 composer types:check                   # Larastan
 ```
