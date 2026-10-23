@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
-import { ChevronsUpDown } from '@lucide/vue';
+import { PhCaretUpDown } from '@phosphor-icons/vue';
 import { computed } from 'vue';
 import {
     DropdownMenu,
@@ -32,7 +32,10 @@ const { isMobile, state } = useSidebar();
                         data-test="sidebar-menu-button"
                     >
                         <UserInfo :user="user" />
-                        <ChevronsUpDown class="ml-auto size-4" />
+                        <PhCaretUpDown
+                            class="ml-auto size-4"
+                            aria-hidden="true"
+                        />
                     </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent

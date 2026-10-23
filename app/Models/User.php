@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Locale;
+use App\Enums\Region;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -23,7 +24,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $name
  * @property string $email
  * @property UserRole $role
- * @property string|null $region
+ * @property Region|null $region
  * @property string|null $phone
  * @property Locale $locale
  * @property Carbon|null $email_verified_at
@@ -55,12 +56,39 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'two_factor_confirmed_at' => 'datetime',
             'role' => UserRole::class,
             'locale' => Locale::class,
+            'region' => Region::class,
         ];
     }
 
     public function hasRole(UserRole $role): bool
     {
         return $this->role === $role;
+    }
+
+    /**
+     * Whether this producer profile is the user's own.
+     */
+    public function isProducer(Producer $producer): bool
+    {
+        return $this->hasRole(UserRole::Producer) && $producer->user_id === $this->id;
+    }
+
+    /**
+     * Whether the producer is a member of the cooperative this user manages.
+     */
+    public function managesProducer(Producer $producer): bool
+    {
+        return $this->hasRole(UserRole::Cooperative)
+            && $producer->cooperative_id !== null
+            && $producer->cooperative?->manager_id === $this->id;
+    }
+
+    /**
+     * The producer's own account, or the manager of their cooperative.
+     */
+    public function actsForProducer(Producer $producer): bool
+    {
+        return $this->isProducer($producer) || $this->managesProducer($producer);
     }
 
     /**

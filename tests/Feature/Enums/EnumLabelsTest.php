@@ -3,13 +3,16 @@
 use App\Enums\DiagnosisStatus;
 use App\Enums\Filiere;
 use App\Enums\Locale;
+use App\Enums\LotStep;
 use App\Enums\OrderStatus;
+use App\Enums\QualityGrade;
+use App\Enums\Region;
 use App\Enums\UserRole;
 
 test('every enum value has a label in each supported locale', function (string $locale) {
     app()->setLocale($locale);
 
-    $cases = [...UserRole::cases(), ...Filiere::cases(), ...OrderStatus::cases(), ...DiagnosisStatus::cases(), ...Locale::cases()];
+    $cases = [...UserRole::cases(), ...Filiere::cases(), ...Region::cases(), ...LotStep::cases(), ...QualityGrade::cases(), ...OrderStatus::cases(), ...DiagnosisStatus::cases(), ...Locale::cases()];
 
     foreach ($cases as $case) {
         expect($case->label())->not->toStartWith('enums.');

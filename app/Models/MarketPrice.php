@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Filiere;
+use App\Enums\Region;
 use Database\Factories\MarketPriceFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property Filiere $filiere
- * @property string $region
+ * @property Region $region
  * @property Carbon $date
  * @property int $price_xaf_kg
  * @property string $volume_t
@@ -34,6 +35,7 @@ class MarketPrice extends Model
     {
         return [
             'filiere' => Filiere::class,
+            'region' => Region::class,
             'date' => 'date',
             'price_xaf_kg' => 'integer',
             'volume_t' => 'decimal:2',

@@ -1,4 +1,5 @@
 import type { Directive } from 'vue';
+import type { AppLocale } from '@/lib/i18n';
 import type { Auth } from '@/types/auth';
 
 // Extend ImportMeta interface for Vite...
@@ -20,6 +21,10 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             sidebarOpen: boolean;
+            locale: AppLocale;
+            locales: AppLocale[];
+            demoMode: boolean;
+            brand: { name: string; logo: string | null };
             [key: string]: unknown;
         };
     }

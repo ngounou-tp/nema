@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Region;
 use Database\Factories\CooperativeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property string $name
- * @property string $region
+ * @property Region $region
  * @property list<string> $filieres
  * @property int|null $manager_id
  * @property Carbon|null $created_at
@@ -33,6 +34,7 @@ class Cooperative extends Model
     protected function casts(): array
     {
         return [
+            'region' => Region::class,
             'filieres' => 'array',
         ];
     }

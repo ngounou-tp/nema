@@ -1,17 +1,19 @@
 import { createInertiaApp } from '@inertiajs/vue3';
-import { initializeTheme } from '@/composables/useAppearance';
 import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
+import { installI18n, syncLocaleWithServer } from '@/lib/i18n';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+// The product name, whatever APP_NAME says in a given environment.
+const appName = 'NEMA';
 
 void createInertiaApp({
-    title: (title) => (title ? `${title} - ${appName}` : appName),
+    title: (title) => (title ? `${title} · ${appName}` : appName),
     layout: (name) => {
         switch (true) {
             case name === 'Welcome':
+            case name === 'Error':
                 return null;
             case name.startsWith('auth/'):
                 return AuthLayout;
@@ -21,7 +23,9 @@ void createInertiaApp({
                 return AppLayout;
         }
     },
-    withApp: (app) => {
+    withApp: (app, { page }) => {
+        installI18n(app, page.props.locale);
+
         app.directive('focus', {
             mounted: (el: HTMLElement, shouldFocus) => {
                 if (shouldFocus.value !== false) {
@@ -31,12 +35,12 @@ void createInertiaApp({
         });
     },
     progress: {
-        color: '#4B5563',
+        color: '#006786',
     },
 });
 
-// This will set light / dark mode on page load...
-initializeTheme();
+// Keeps the interface language in step with the server after each visit...
+syncLocaleWithServer();
 
 // This will listen for flash toast data from the server...
 initializeFlashToast();

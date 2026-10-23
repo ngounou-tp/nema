@@ -4,8 +4,10 @@ namespace Database\Seeders;
 
 use App\Enums\Filiere;
 use App\Enums\Locale;
+use App\Enums\LotStep;
 use App\Enums\OrderStatus;
 use App\Enums\QualityGrade;
+use App\Enums\Region;
 use App\Enums\UserRole;
 use App\Models\Cooperative;
 use App\Models\Lot;
@@ -15,6 +17,7 @@ use App\Models\Producer;
 use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
+use App\Support\DemoAccounts;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -31,7 +34,7 @@ use Illuminate\Support\Str;
  */
 class DemoSeeder extends Seeder
 {
-    public const string PASSWORD = 'nema2026';
+    public const string PASSWORD = DemoAccounts::PASSWORD;
 
     public const string EMAIL_DOMAIN = 'nema.demo';
 
@@ -40,12 +43,7 @@ class DemoSeeder extends Seeder
      *
      * @var array<string, string>
      */
-    public const array DEMO_ACCOUNTS = [
-        'producer' => 'producteur@nema.demo',
-        'cooperative' => 'coop@nema.demo',
-        'buyer' => 'acheteur@nema.demo',
-        'admin' => 'admin@nema.demo',
-    ];
+    public const array DEMO_ACCOUNTS = DemoAccounts::EMAILS;
 
     private const string PRICES_FROM = '2025-11-01';
 
@@ -57,7 +55,7 @@ class DemoSeeder extends Seeder
      * @var array<string, array{name: string, towns: list<string>, manager: string, manager_email: string, filieres: list<Filiere>, villages: list<string>, producers: int}>
      */
     private const array COOPERATIVES = [
-        'Ouest' => [
+        'west' => [
             'name' => 'Coopérative Agricole des Hauts-Plateaux de la Menoua (CAHPM)',
             'towns' => ['Dschang', 'Bafoussam'],
             'manager' => 'Hélène Kenfack',
@@ -66,7 +64,7 @@ class DemoSeeder extends Seeder
             'villages' => ['Foto', 'Fongo-Tongo', 'Baleveng', 'Bafou', 'Nkong-Ni', 'Bamendjou', 'Baham', 'Bandjoun', 'Penka-Michel'],
             'producers' => 9,
         ],
-        'Littoral' => [
+        'littoral' => [
             'name' => 'Société Coopérative des Planteurs du Moungo (SCPM)',
             'towns' => ['Penja', 'Njombé'],
             'manager' => 'Paul Ekwalla',
@@ -75,7 +73,7 @@ class DemoSeeder extends Seeder
             'villages' => ['Penja', 'Njombé', 'Loum', 'Manjo', 'Mbanga', 'Nlonako', 'Kompina'],
             'producers' => 8,
         ],
-        'Centre' => [
+        'centre' => [
             'name' => 'Coopérative des Producteurs de la Lékié et du Nyong (COPLEN)',
             'towns' => ['Obala', 'Mbalmayo'],
             'manager' => 'Bernadette Ngono',
@@ -92,15 +90,15 @@ class DemoSeeder extends Seeder
      * @var array<string, array{first: list<string>, last: list<string>}>
      */
     private const array NAMES = [
-        'Ouest' => [
+        'west' => [
             'first' => ['Jean-Pierre', 'Marie-Claire', 'Emmanuel', 'Odile', 'Hervé', 'Christelle', 'Joseph', 'Pauline', 'Samuel', 'Thérèse', 'Gaston', 'Josiane'],
             'last' => ['Fotso', 'Kamga', 'Tchinda', 'Djoumessi', 'Tagne', 'Wamba', 'Nguimfack', 'Talla', 'Nzeyang', 'Feudjio', 'Momo', 'Tsafack'],
         ],
-        'Littoral' => [
+        'littoral' => [
             'first' => ['Rose', 'Didier', 'Clarisse', 'Martin', 'Alain', 'Félicité', 'Serge', 'Pélagie', 'Jacqueline', 'Roger', 'Esther'],
             'last' => ['Ebongue', 'Moukouri', 'Ndoumbe', 'Epee', 'Kotto', 'Dikongue', 'Essombe', 'Nkotto', 'Mbella', 'Din', 'Eyoum'],
         ],
-        'Centre' => [
+        'centre' => [
             'first' => ['Jacques', 'Brigitte', 'François', 'Yvonne', 'Cyrille', 'Agnès', 'Thomas', 'Solange', 'Basile', 'Mireille', 'Désiré'],
             'last' => ['Atangana', 'Mbarga', 'Essomba', 'Owona', 'Abena', 'Onana', 'Manga', 'Ndzana', 'Mvondo', 'Eyenga', 'Bella'],
         ],
@@ -112,17 +110,17 @@ class DemoSeeder extends Seeder
      * @var array<string, array{price: int, quantity: array{int, int}, names: list<string>, description: string}>
      */
     private const array FILIERES = [
-        'cacao' => ['price' => 4100, 'quantity' => [300, 3000], 'names' => ['Cacao marchand fermenté', 'Fèves de cacao séchées grade I'], 'description' => 'Fèves fermentées 6 jours en bacs et séchées au soleil, humidité inférieure à 8 %.'],
-        'cafe_arabica' => ['price' => 2500, 'quantity' => [200, 2000], 'names' => ['Café arabica parche', 'Café arabica vert lavé'], 'description' => "Arabica d'altitude cueilli à maturité, dépulpé, lavé et séché sur claies."],
-        'cafe_robusta' => ['price' => 1800, 'quantity' => [300, 2500], 'names' => ['Café robusta coque', 'Café robusta marchand'], 'description' => 'Robusta séché en coque puis décortiqué, sacs de jute de 60 kg.'],
-        'mais' => ['price' => 280, 'quantity' => [500, 8000], 'names' => ['Maïs grain jaune sec', 'Maïs blanc séché'], 'description' => 'Maïs égrené et séché, sans charançons, livré en sacs de 100 kg.'],
-        'manioc' => ['price' => 200, 'quantity' => [300, 4000], 'names' => ['Cossettes de manioc', 'Tubercules de manioc frais'], 'description' => 'Manioc doux récolté du jour ou transformé en cossettes séchées.'],
+        'cocoa' => ['price' => 4100, 'quantity' => [300, 3000], 'names' => ['Cacao marchand fermenté', 'Fèves de cacao séchées grade I'], 'description' => 'Fèves fermentées 6 jours en bacs et séchées au soleil, humidité inférieure à 8 %.'],
+        'arabica_coffee' => ['price' => 2500, 'quantity' => [200, 2000], 'names' => ['Café arabica parche', 'Café arabica vert lavé'], 'description' => "Arabica d'altitude cueilli à maturité, dépulpé, lavé et séché sur claies."],
+        'robusta_coffee' => ['price' => 1800, 'quantity' => [300, 2500], 'names' => ['Café robusta coque', 'Café robusta marchand'], 'description' => 'Robusta séché en coque puis décortiqué, sacs de jute de 60 kg.'],
+        'maize' => ['price' => 280, 'quantity' => [500, 8000], 'names' => ['Maïs grain jaune sec', 'Maïs blanc séché'], 'description' => 'Maïs égrené et séché, sans charançons, livré en sacs de 100 kg.'],
+        'cassava' => ['price' => 200, 'quantity' => [300, 4000], 'names' => ['Cossettes de manioc', 'Tubercules de manioc frais'], 'description' => 'Manioc doux récolté du jour ou transformé en cossettes séchées.'],
         'plantain' => ['price' => 300, 'quantity' => [200, 2500], 'names' => ['Régimes de plantain', 'Plantain mûr'], 'description' => 'Régimes bien remplis, récoltés à maturité commerciale.'],
-        'banane' => ['price' => 250, 'quantity' => [300, 3000], 'names' => ['Banane douce dessert', 'Banane Grande Naine'], 'description' => 'Bananes dessert calibrées, mûrissement contrôlé.'],
-        'tomate' => ['price' => 450, 'quantity' => [100, 1500], 'names' => ['Tomates fraîches en cageots', 'Tomates Roma'], 'description' => 'Tomates fermes récoltées tournantes, conditionnées en cageots de 25 kg.'],
-        'arachide' => ['price' => 850, 'quantity' => [100, 1200], 'names' => ['Arachides décortiquées', 'Arachides en coque'], 'description' => 'Arachides triées à la main, bien sèches, sans moisissures.'],
-        'igname' => ['price' => 380, 'quantity' => [200, 2500], 'names' => ['Igname blanche', 'Igname jaune'], 'description' => 'Tubercules sains, récoltés et stockés à l’abri.'],
-        'huile_de_palme' => ['price' => 1050, 'quantity' => [50, 800], 'names' => ['Huile de palme rouge artisanale', 'Huile de palme brute'], 'description' => 'Huile rouge pressée localement, bidons de 20 litres.'],
+        'banana' => ['price' => 250, 'quantity' => [300, 3000], 'names' => ['Banane douce dessert', 'Banane Grande Naine'], 'description' => 'Bananes dessert calibrées, mûrissement contrôlé.'],
+        'tomato' => ['price' => 450, 'quantity' => [100, 1500], 'names' => ['Tomates fraîches en cageots', 'Tomates Roma'], 'description' => 'Tomates fermes récoltées tournantes, conditionnées en cageots de 25 kg.'],
+        'groundnut' => ['price' => 850, 'quantity' => [100, 1200], 'names' => ['Arachides décortiquées', 'Arachides en coque'], 'description' => 'Arachides triées à la main, bien sèches, sans moisissures.'],
+        'yam' => ['price' => 380, 'quantity' => [200, 2500], 'names' => ['Igname blanche', 'Igname jaune'], 'description' => 'Tubercules sains, récoltés et stockés à l’abri.'],
+        'palm_oil' => ['price' => 1050, 'quantity' => [50, 800], 'names' => ['Huile de palme rouge artisanale', 'Huile de palme brute'], 'description' => 'Huile rouge pressée localement, bidons de 20 litres.'],
     ];
 
     /**
@@ -131,17 +129,17 @@ class DemoSeeder extends Seeder
      * @var array<string, list<float>>
      */
     private const array SEASONALITY = [
-        'cacao' => [1.12, 1.10, 1.07, 1.05, 1.03, 1.01, 0.99, 0.98, 0.97, 0.98, 0.99, 1.00],
-        'cafe_arabica' => [0.96, 0.95, 0.96, 0.98, 1.00, 1.01, 1.02, 1.03, 1.04, 1.03, 1.01, 1.00],
-        'cafe_robusta' => [0.95, 0.94, 0.96, 0.98, 1.00, 1.02, 1.03, 1.04, 1.03, 1.02, 1.01, 1.00],
-        'mais' => [0.90, 0.85, 0.90, 1.00, 1.10, 1.20, 1.25, 1.15, 0.95, 0.85, 0.88, 0.92],
-        'manioc' => [0.95, 0.92, 0.95, 1.02, 1.10, 1.15, 1.18, 1.10, 1.00, 0.95, 0.94, 0.96],
+        'cocoa' => [1.12, 1.10, 1.07, 1.05, 1.03, 1.01, 0.99, 0.98, 0.97, 0.98, 0.99, 1.00],
+        'arabica_coffee' => [0.96, 0.95, 0.96, 0.98, 1.00, 1.01, 1.02, 1.03, 1.04, 1.03, 1.01, 1.00],
+        'robusta_coffee' => [0.95, 0.94, 0.96, 0.98, 1.00, 1.02, 1.03, 1.04, 1.03, 1.02, 1.01, 1.00],
+        'maize' => [0.90, 0.85, 0.90, 1.00, 1.10, 1.20, 1.25, 1.15, 0.95, 0.85, 0.88, 0.92],
+        'cassava' => [0.95, 0.92, 0.95, 1.02, 1.10, 1.15, 1.18, 1.10, 1.00, 0.95, 0.94, 0.96],
         'plantain' => [0.92, 0.95, 1.00, 1.08, 1.15, 1.20, 1.12, 1.02, 0.95, 0.90, 0.92, 0.95],
-        'banane' => [0.98, 1.00, 1.02, 1.03, 1.04, 1.03, 1.01, 0.99, 0.98, 0.97, 0.98, 1.00],
-        'tomate' => [0.85, 0.75, 0.70, 0.72, 0.85, 1.00, 1.15, 1.30, 1.40, 1.35, 1.20, 0.95],
-        'arachide' => [0.95, 0.98, 1.02, 1.08, 1.15, 1.20, 1.12, 0.95, 0.85, 0.88, 0.92, 0.96],
-        'igname' => [0.90, 0.92, 0.98, 1.05, 1.12, 1.18, 1.15, 1.05, 0.95, 0.88, 0.88, 0.92],
-        'huile_de_palme' => [1.08, 1.10, 1.05, 0.98, 0.92, 0.90, 0.92, 0.96, 1.00, 1.04, 1.06, 1.08],
+        'banana' => [0.98, 1.00, 1.02, 1.03, 1.04, 1.03, 1.01, 0.99, 0.98, 0.97, 0.98, 1.00],
+        'tomato' => [0.85, 0.75, 0.70, 0.72, 0.85, 1.00, 1.15, 1.30, 1.40, 1.35, 1.20, 0.95],
+        'groundnut' => [0.95, 0.98, 1.02, 1.08, 1.15, 1.20, 1.12, 0.95, 0.85, 0.88, 0.92, 0.96],
+        'yam' => [0.90, 0.92, 0.98, 1.05, 1.12, 1.18, 1.15, 1.05, 0.95, 0.88, 0.88, 0.92],
+        'palm_oil' => [1.08, 1.10, 1.05, 0.98, 0.92, 0.90, 0.92, 0.96, 1.00, 1.04, 1.06, 1.08],
     ];
 
     /**
@@ -150,9 +148,9 @@ class DemoSeeder extends Seeder
      * @var array<string, float>
      */
     private const array REGION_PRICE_FACTOR = [
-        'Ouest' => 0.95,
-        'Littoral' => 1.06,
-        'Centre' => 1.02,
+        'west' => 0.95,
+        'littoral' => 1.06,
+        'centre' => 1.02,
     ];
 
     /**
@@ -173,16 +171,16 @@ class DemoSeeder extends Seeder
      * @var list<array{name: string, email: string, region: string, locale?: Locale}>
      */
     private const array BUYERS = [
-        ['name' => 'Douala Cocoa Processing SARL', 'email' => 'achats.dcp@nema.demo', 'region' => 'Littoral'],
-        ['name' => 'Agro-Export Wouri SA', 'email' => 'contact.agroexportwouri@nema.demo', 'region' => 'Littoral', 'locale' => Locale::English],
-        ['name' => 'Supermarché Le Bon Panier', 'email' => 'appro.bonpanier@nema.demo', 'region' => 'Centre'],
-        ['name' => 'Restaurant Saveurs du Mfoundi', 'email' => 'saveurs.mfoundi@nema.demo', 'region' => 'Centre'],
-        ['name' => 'Boulangerie-Pâtisserie La Mie Dorée', 'email' => 'miedoree@nema.demo', 'region' => 'Littoral'],
-        ['name' => 'Torréfaction des Hauts-Plateaux', 'email' => 'torrefaction.hp@nema.demo', 'region' => 'Ouest'],
-        ['name' => 'Régine Etoundi (revendeuse, marché Mokolo)', 'email' => 'regine.etoundi@nema.demo', 'region' => 'Centre'],
-        ['name' => 'Christian Nkodo', 'email' => 'christian.nkodo@nema.demo', 'region' => 'Centre', 'locale' => Locale::English],
-        ['name' => 'Aïcha Bello', 'email' => 'aicha.bello@nema.demo', 'region' => 'Littoral'],
-        ['name' => 'Ginette Mbida (revendeuse, marché Sandaga)', 'email' => 'ginette.mbida@nema.demo', 'region' => 'Littoral'],
+        ['name' => 'Douala Cocoa Processing SARL', 'email' => 'achats.dcp@nema.demo', 'region' => 'littoral'],
+        ['name' => 'Agro-Export Wouri SA', 'email' => 'contact.agroexportwouri@nema.demo', 'region' => 'littoral', 'locale' => Locale::English],
+        ['name' => 'Supermarché Le Bon Panier', 'email' => 'appro.bonpanier@nema.demo', 'region' => 'centre'],
+        ['name' => 'Restaurant Saveurs du Mfoundi', 'email' => 'saveurs.mfoundi@nema.demo', 'region' => 'centre'],
+        ['name' => 'Boulangerie-Pâtisserie La Mie Dorée', 'email' => 'miedoree@nema.demo', 'region' => 'littoral'],
+        ['name' => 'Torréfaction des Hauts-Plateaux', 'email' => 'torrefaction.hp@nema.demo', 'region' => 'west'],
+        ['name' => 'Régine Etoundi (revendeuse, marché Mokolo)', 'email' => 'regine.etoundi@nema.demo', 'region' => 'centre'],
+        ['name' => 'Christian Nkodo', 'email' => 'christian.nkodo@nema.demo', 'region' => 'centre', 'locale' => Locale::English],
+        ['name' => 'Aïcha Bello', 'email' => 'aicha.bello@nema.demo', 'region' => 'littoral'],
+        ['name' => 'Ginette Mbida (revendeuse, marché Sandaga)', 'email' => 'ginette.mbida@nema.demo', 'region' => 'littoral'],
     ];
 
     /**
@@ -224,7 +222,7 @@ class DemoSeeder extends Seeder
         DB::transaction(function (): void {
             $this->purge();
 
-            $this->createAccount('Mme Sandrine Abega', self::DEMO_ACCOUNTS['admin'], UserRole::Admin, 'Centre');
+            $this->createAccount('Mme Sandrine Abega', self::DEMO_ACCOUNTS['admin'], UserRole::Admin, 'centre');
 
             $cooperatives = $this->createCooperatives();
             $producers = $this->createProducers($cooperatives);
@@ -232,7 +230,7 @@ class DemoSeeder extends Seeder
             $buyers = $this->createBuyers();
 
             $this->createOrders($producers, $products, $buyers);
-            $this->createLots($producers, $products);
+            $this->createLots($products);
             $this->createMarketPrices();
         });
     }
@@ -305,7 +303,7 @@ class DemoSeeder extends Seeder
 
         foreach (self::COOPERATIVES as $region => $definition) {
             for ($index = 0; $index < $definition['producers']; $index++) {
-                $isDemoProducer = $region === 'Centre' && $index === 0;
+                $isDemoProducer = $region === 'centre' && $index === 0;
                 $profile = $isDemoProducer ? 'excellent' : ($profiles->shift() ?? 'average');
 
                 if ($isDemoProducer) {
@@ -391,7 +389,7 @@ class DemoSeeder extends Seeder
      */
     private function createBuyers(): Collection
     {
-        $buyers = collect([$this->createAccount('Arlette Ndjock', self::DEMO_ACCOUNTS['buyer'], UserRole::Buyer, 'Littoral')]);
+        $buyers = collect([$this->createAccount('Arlette Ndjock', self::DEMO_ACCOUNTS['buyer'], UserRole::Buyer, 'littoral', Locale::English)]);
 
         foreach (self::BUYERS as $buyer) {
             $buyers->push($this->createAccount($buyer['name'], $buyer['email'], UserRole::Buyer, $buyer['region'], $buyer['locale'] ?? Locale::French));
@@ -510,12 +508,10 @@ class DemoSeeder extends Seeder
     /**
      * Create 20 traceable lots with 4 to 6 steps, two of them for the demo producer's cacao.
      *
-     * @param  Collection<int, array{producer: Producer, region: string, profile: key-of<self::PROFILES>}>  $producers
      * @param  Collection<int, Product>  $products
      */
-    private function createLots(Collection $producers, Collection $products): void
+    private function createLots(Collection $products): void
     {
-        $regionByProducer = $producers->mapWithKeys(fn (array $entry): array => [$entry['producer']->id => $entry['region']]);
         $demoCacao = $products->first(fn (Product $product): bool => $product->filiere === Filiere::Cacao
             && $product->producer->user->email === self::DEMO_ACCOUNTS['producer']);
 
@@ -523,16 +519,28 @@ class DemoSeeder extends Seeder
             ->merge($products->reject(fn (Product $product): bool => $product->is($demoCacao))->shuffle()->take(18));
 
         foreach ($lotProducts as $product) {
-            $region = $regionByProducer[$product->producer_id];
+            $region = $product->producer->user->region ?? Region::Centre;
             $harvestDate = Carbon::instance(fake()->dateTimeBetween('-4 months', '-2 weeks'))->startOfDay();
 
             Lot::query()->create([
                 'product_id' => $product->id,
                 'harvest_date' => $harvestDate,
-                'origin' => $product->producer->village.', région '.($region === 'Ouest' ? 'de l’Ouest' : 'du '.$region),
-                'steps' => $this->traceabilitySteps($product, $region, $harvestDate),
+                'origin' => $product->producer->village.', '.$this->originRegion($region),
+                'steps' => $this->traceabilitySteps($product, $region->value, $harvestDate),
             ]);
         }
+    }
+
+    /**
+     * Lot origins are user-entered content: written in French, as a cooperative would.
+     */
+    private function originRegion(Region $region): string
+    {
+        return match ($region) {
+            Region::West => 'région de l’Ouest',
+            Region::Littoral => 'région du Littoral',
+            default => 'région du Centre',
+        };
     }
 
     /**
@@ -546,36 +554,36 @@ class DemoSeeder extends Seeder
 
         $steps = match ($product->filiere) {
             Filiere::Cacao => [
-                ['Récolte et écabossage', 0, 'Parcelle du producteur, '.$village],
-                ['Fermentation en bacs (6 jours)', 1, 'Unité de fermentation, '.$village],
-                ['Séchage au soleil', 7, 'Aire de séchage, '.$village],
-                ['Tri et ensachage', 15, $warehouse],
-                ['Contrôle qualité (humidité < 8 %)', 17, $warehouse],
-                ['Expédition vers le port de Douala', 20, 'Port autonome de Douala'],
+                [LotStep::Harvest, 0, 'Parcelle du producteur, '.$village],
+                [LotStep::Fermentation, 1, 'Unité de fermentation, '.$village],
+                [LotStep::Drying, 7, 'Aire de séchage, '.$village],
+                [LotStep::Sorting, 15, $warehouse],
+                [LotStep::QualityCheck, 17, $warehouse],
+                [LotStep::Shipping, 20, 'Port autonome de Douala'],
             ],
             Filiere::CafeArabica, Filiere::CafeRobusta => [
-                ['Cueillette des cerises', 0, 'Plantation, '.$village],
-                ['Dépulpage et lavage', 1, 'Station de lavage, '.$village],
-                ['Séchage sur claies', 3, 'Aire de séchage, '.$village],
-                ['Décorticage et triage', 18, $warehouse],
-                ['Ensachage (sacs de 60 kg)', 20, $warehouse],
+                [LotStep::Harvest, 0, 'Plantation, '.$village],
+                [LotStep::Pulping, 1, 'Station de lavage, '.$village],
+                [LotStep::Drying, 3, 'Aire de séchage, '.$village],
+                [LotStep::Hulling, 18, $warehouse],
+                [LotStep::Bagging, 20, $warehouse],
             ],
             Filiere::Mais, Filiere::Arachide => [
-                ['Récolte', 0, 'Champ du producteur, '.$village],
-                ['Séchage', 2, 'Aire de séchage, '.$village],
-                ['Égrenage et tri', 9, $village],
-                ['Stockage en sacs', 11, $warehouse],
+                [LotStep::Harvest, 0, 'Champ du producteur, '.$village],
+                [LotStep::Drying, 2, 'Aire de séchage, '.$village],
+                [LotStep::Shelling, 9, $village],
+                [LotStep::Storage, 11, $warehouse],
             ],
             default => [
-                ['Récolte', 0, 'Parcelle du producteur, '.$village],
-                ['Tri et calibrage', 1, $village],
-                ['Conditionnement', 1, $warehouse],
-                ['Transport vers le marché', 2, $region === 'Centre' ? 'Marché du Mfoundi, Yaoundé' : 'Marché Sandaga, Douala'],
+                [LotStep::Harvest, 0, 'Parcelle du producteur, '.$village],
+                [LotStep::Sorting, 1, $village],
+                [LotStep::Packaging, 1, $warehouse],
+                [LotStep::Transport, 2, $region === 'centre' ? 'Marché du Mfoundi, Yaoundé' : 'Marché Sandaga, Douala'],
             ],
         };
 
         return array_map(fn (array $step): array => [
-            'label' => $step[0],
+            'label' => $step[0]->value,
             'date' => $harvestDate->copy()->addDays($step[1])->toDateString(),
             'location' => $step[2],
         ], $steps);

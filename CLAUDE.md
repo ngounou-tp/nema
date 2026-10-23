@@ -16,7 +16,7 @@ Mot de passe des comptes de démo : `nema2026`.
 ## Stack
 
 - Laravel 13 (PHP 8.4) + Inertia v3 + Vue 3 (TypeScript) + Tailwind 4 + shadcn-vue (starter kit officiel, Fortify pour l'authentification).
-- Base de données : **SQLite en local et dans les tests**, **PostgreSQL (Neon) en production** — voir `docs/production-database.md`. En production, l'app utilise la connexion `pgsql` (pooled) et les migrations passent par `--database=pgsql_direct`.
+- Base de données : **SQLite dans les tests**, **PostgreSQL (Neon)** sinon — branche `dev` pour le développement, branche par défaut = production ; voir `docs/production-database.md`. L'app utilise la connexion `pgsql` (pooled, `PDO::ATTR_EMULATE_PREPARES` obligatoire : le pooler de Neon annule sinon toute transaction) et les migrations passent par `--database=pgsql_direct` (endpoint sans `-pooler`).
 - IA : **Groq** pour le texte, **Gemini** pour la vision, OpenRouter en secours. Clés et modèles dans `config('services.groq|gemini|openrouter')`, comportement (ordre, quotas, délais, mode démo) dans `config('nema')` — voir « Couche IA ».
 - Photos : jamais en base, seulement leur chemin ; disque `config('filesystems.photos')` (`local` en dev, `neon` = Neon Object Storage en production), affichées par `temporaryUrl()`.
 - Autres : Sentry (erreurs), `bacon/bacon-qr-code` (QR des lots), `chart.js` + `vue-chartjs` (graphiques), `dompurify` (Markdown IA).
@@ -25,16 +25,29 @@ Mot de passe des comptes de démo : `nema2026`.
 
 - Code, noms de tables, colonnes, classes et routes **en anglais**.
 - **Application entièrement bilingue français / anglais** (les deux langues officielles du Cameroun) :
-  - aucun texte d'interface en dur : tout passe par des clés de traduction, avec une version dans `lang/fr` et une dans `lang/en` (libellés des enums : `lang/{fr,en}/enums.php`, via `label()`) ;
-  - langue par défaut `fr`, secours `en` (`config('app.supported_locales')`) ; la langue choisie par l'utilisateur est enregistrée dans `users.locale` ;
-  - l'IA répond dans la langue de l'utilisateur ; les contenus saisis par les utilisateurs (noms de produits, avis, étapes de lots) restent dans leur langue d'origine ;
-  - formats selon la langue : `fr-CM` ou `en-CM` pour les nombres et les dates ; unités kg, ha, FCFA dans les deux langues.
-- Valeurs fixes en enums PHP dans `app/Enums` (rôles, statuts, filières, grades).
+  - aucun texte d'interface en dur : textes dans `lang/fr.json` et `lang/en.json` (clés `nav.*`, `dashboard.*`…, mêmes clés dans les deux fichiers), libellés des enums dans `lang/{fr,en}/enums.php` (via `label()`), messages de Laravel dans `lang/{fr,en}/*.php` (laravel-lang) ;
+  - côté Vue : `$t('cle')` / `trans()` de `laravel-vue-i18n` (lit les mêmes fichiers, PHP compris via le plugin Vite) ; titres passés en `defineOptions({ layout })` = des clés, traduites par le layout ;
+  - langue choisie par `SetLocale` : `?lang` (pages publiques), puis `users.locale`, puis session, puis `Accept-Language`, puis `fr` ; sélecteur FR | EN (`LanguageSwitcher`, route `locale.update`) qui enregistre en session et dans `users.locale` ;
+  - formats : `App\Support\Format` (PHP) et `resources/js/lib/format.ts` (JS), mêmes règles : « 12 500 FCFA » en fr, « 12,500 XAF » en en, dates `fr-CM` / `en-CM`, poids en kg puis t ;
+  - l'IA répond dans la langue de l'utilisateur ; les contenus saisis par les utilisateurs (noms de produits, avis, lieux et origine des lots) restent dans leur langue d'origine ;
+  - contrôle : `npm run lint:i18n` (texte en dur dans un `.vue`, clé absente de `fr.json`/`en.json`), aussi lancé par les tests Pest.
+- Valeurs fixes en enums PHP dans `app/Enums`, stockées en **clés anglaises** et traduites à l'affichage : rôles, statuts, filières (`cocoa`, `maize`…), régions (`Region`), qualités, étapes de lot (`LotStep` : `harvest`, `drying`…).
 - Logique métier dans `app/Services` (scores, prévisions, clients IA) ; les contrôleurs restent fins.
 - Validation par **Form Requests**, autorisations par **Policies** (un producteur ne modifie que ses produits, une coopérative que ses membres).
 - Tests **Pest** (`tests/Feature` surtout), modèles créés via leurs factories.
 - L'IA explique, conseille ou résume ; elle ne calcule jamais seule un score ou un prix (calculés en PHP).
 - Avant tout travail d'interface : skills `nema-product-ux`, `frontend-design`, `vue-best-practices`, `tailwindcss-development` ; audit avec `web-design-guidelines`, vérification dans un navigateur avec `webapp-testing`.
+
+## Interface (charte « Broadsheet », maquettes de la phase 0)
+
+- Thème clair uniquement. Papier `#f3f2f2`, surface `#eae9e9`, encre `#201e1d` ; cyan `brand-*` pour l'interactif (`brand-700` `#006786` : le cyan de base rate le contraste AA) ; magenta `alert-*` réservé aux problèmes (annulations, litiges, erreurs). Jetons dans `resources/css/app.css`, mappés sur les variables shadcn.
+- Police Source Serif 4 partout (auto-hébergée), icônes Phosphor duotone (`@phosphor-icons/vue`), rayons de 1 à 4 px. Signatures : filet double `.rule-double`, ligne d'index avec pointillés (`StatLine`), dateline en tête des tableaux de bord.
+- Composants de base : `ui/*` (shadcn restylés : `Button`, `Card`, `Badge` variantes `accent`/`alert`/`neutral`, `Alert` variante `info`, `Table`), `FormField`, `EmptyState`, `LoadingState`, `ScoreBadge` (≥ 80 très fiable, 60–79 fiable, < 60 à surveiller), `OrdersList` (tableau ou blocs selon la largeur de sa colonne, container query).
+- Logo : `public/images/logo.svg` (ou `.png`) s'il existe, sinon le logotype « NEMA » (`brand.name`, indépendant de `APP_NAME`).
+- `AppLayout` : barre latérale par rôle sur ordinateur, barre du bas sur mobile (`useNavigation` : 4 premiers liens + « Plus »), bandeau « données fictives » quand `NEMA_DEMO_MODE=true`.
+- Accès : middleware `role:cooperative,admin` (`EnsureRole`) sur les routes, Policies pour les modèles ; l'admin passe toutes les Policies (`Gate::before`). Connexion démo : `POST /demo/login/{role}` (mode démo seulement, 10/min par IP).
+- Erreurs 403, 404, 429 (et 500/503 hors debug) : page Inertia `Error`, bilingue.
+- Vérifier à 375 px dans les deux langues (le français est plus long).
 
 ## Sécurité
 
@@ -64,6 +77,9 @@ composer run dev                       # serveur Laravel + Vite
 php artisan migrate:fresh --seed       # base de démo réinitialisée (DemoSeeder)
 php artisan test --compact             # tests (lancer `npm run build` avant, pour le manifeste Vite)
 php artisan nema:ai-ping               # état et latence de chaque fournisseur IA (vrais appels)
+php artisan db:seed --class=DemoSeeder # recrée seulement les comptes @nema.demo et leurs données
+npm run lint:i18n                      # aucun texte en dur, aucune clé de traduction manquante
+npm run types:check                    # vue-tsc
 vendor/bin/pint --dirty --format agent # formatage PHP
 composer types:check                   # Larastan
 ```
@@ -166,6 +182,16 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 # Deployment
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
+
+=== tests rules ===
+
+# Test Enforcement
+
+- Add or update tests for behavior and logic changes when a test provides meaningful regression coverage.
+- Pure copy, styling, and layout-only changes do not require new or updated tests.
+- When test coverage applies, run the affected tests and ensure they pass.
+- Test the changed behavior and its important failure modes, but do not add tests beyond them.
+- Read the `testing-best-practices` skill before writing tests.
 
 === inertia-laravel/core rules ===
 

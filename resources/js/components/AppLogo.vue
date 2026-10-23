@@ -1,19 +1,29 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import { computed } from 'vue';
 
-const name = usePage().props.name;
+const { size = 'md' } = defineProps<{
+    size?: 'md' | 'lg';
+}>();
+
+const page = usePage();
+const logo = computed(() => page.props.brand.logo);
 </script>
 
 <template>
-    <div
-        class="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
-    >
-        <AppLogoIcon class="size-5 fill-current text-white dark:text-black" />
-    </div>
-    <div class="ml-1 grid flex-1 text-left text-sm">
-        <span class="mb-0.5 truncate leading-tight font-semibold">{{
-            name
-        }}</span>
-    </div>
+    <span class="inline-flex items-center">
+        <img
+            v-if="logo"
+            :src="logo"
+            :alt="page.props.brand.name"
+            :class="size === 'lg' ? 'h-10 w-auto' : 'h-7 w-auto'"
+        />
+        <!-- Wordmark until public/images/logo.svg is provided. -->
+        <span
+            v-else
+            class="leading-none font-semibold tracking-[0.06em]"
+            :class="size === 'lg' ? 'text-3xl' : 'text-[22px]'"
+            >{{ page.props.brand.name }}</span
+        >
+    </span>
 </template>

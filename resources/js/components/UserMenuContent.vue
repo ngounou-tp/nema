@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
-import { LogOut, Settings } from '@lucide/vue';
+import { PhGear, PhSignOut } from '@phosphor-icons/vue';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -33,8 +33,12 @@ defineProps<Props>();
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
             <Link class="block w-full cursor-pointer" :href="edit()" prefetch>
-                <Settings class="mr-2 h-4 w-4" />
-                Settings
+                <PhGear
+                    weight="duotone"
+                    class="mr-2 size-4"
+                    aria-hidden="true"
+                />
+                {{ $t('nav.settings') }}
             </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>
@@ -47,8 +51,12 @@ defineProps<Props>();
             as="button"
             data-test="logout-button"
         >
-            <LogOut class="mr-2 h-4 w-4" />
-            Log out
+            <PhSignOut
+                weight="duotone"
+                class="mr-2 size-4"
+                aria-hidden="true"
+            />
+            {{ $t('nav.logout') }}
         </Link>
     </DropdownMenuItem>
 </template>

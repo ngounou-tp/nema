@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Locale;
+use App\Enums\Region;
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -30,7 +31,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'role' => UserRole::Buyer,
-            'region' => fake()->randomElement(['Ouest', 'Littoral', 'Centre']),
+            'region' => fake()->randomElement([Region::West, Region::Littoral, Region::Centre]),
             'phone' => '+237 6'.fake()->numerify('## ## ## ##'),
             'locale' => Locale::French,
             'email_verified_at' => now(),

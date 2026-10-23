@@ -8,27 +8,40 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
+import { toUrl } from '@/lib/utils';
 import type { NavItem } from '@/types';
 
 defineProps<{
     items: NavItem[];
 }>();
 
-const { isCurrentUrl } = useCurrentUrl();
+const { isCurrentOrParentUrl } = useCurrentUrl();
 </script>
 
 <template>
     <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroupLabel>{{ $t('nav.main') }}</SidebarGroupLabel>
         <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
+            <SidebarMenuItem v-for="item in items" :key="toUrl(item.href)">
                 <SidebarMenuButton
                     as-child
-                    :is-active="isCurrentUrl(item.href)"
+                    size="lg"
+                    :is-active="isCurrentOrParentUrl(item.href)"
                     :tooltip="item.title"
+                    class="h-10 text-[15px] data-[active=true]:font-semibold"
                 >
-                    <Link :href="item.href">
-                        <component :is="item.icon" />
+                    <Link
+                        :href="item.href"
+                        :aria-current="
+                            isCurrentOrParentUrl(item.href) ? 'page' : undefined
+                        "
+                    >
+                        <component
+                            :is="item.icon"
+                            weight="duotone"
+                            class="size-5!"
+                            aria-hidden="true"
+                        />
                         <span>{{ item.title }}</span>
                     </Link>
                 </SidebarMenuButton>

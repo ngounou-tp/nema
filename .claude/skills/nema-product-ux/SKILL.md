@@ -65,4 +65,4 @@ Producer photographs a sick cacao leaf → gets diagnosis + advice → publishes
 
 ## Quality floor
 
-Responsive down to 360 px, visible keyboard focus, reduced motion respected, AA contrast, light/dark via the existing appearance setting, fast on slow networks (small images, no heavy libraries; charts use `chart.js` + `vue-chartjs`).
+Responsive down to 360 px, visible keyboard focus, reduced motion respected, AA contrast, light theme only (Broadsheet palette, decision of 22 Oct 2026), fast on slow networks (small images, no heavy libraries; charts use `chart.js` + `vue-chartjs`).

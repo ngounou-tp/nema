@@ -41,7 +41,26 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'locale' => app()->getLocale(),
+            'locales' => config('app.supported_locales'),
+            'demoMode' => (bool) config('nema.demo_mode'),
+            // The product name is fixed, whatever APP_NAME says in a given environment.
+            'brand' => ['name' => 'NEMA', 'logo' => $this->logoUrl()],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }
+
+    /**
+     * The NEMA logo once it is dropped in public/images/; until then the interface shows the wordmark.
+     */
+    private function logoUrl(): ?string
+    {
+        foreach (['logo.svg', 'logo.png'] as $file) {
+            if (is_file(public_path('images/'.$file))) {
+                return asset('images/'.$file);
+            }
+        }
+
+        return null;
     }
 }

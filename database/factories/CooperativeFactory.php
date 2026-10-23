@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Filiere;
+use App\Enums\Region;
 use App\Models\Cooperative;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,7 +22,7 @@ class CooperativeFactory extends Factory
     {
         return [
             'name' => 'Coopérative '.fake()->unique()->lastName(),
-            'region' => fake()->randomElement(['Ouest', 'Littoral', 'Centre']),
+            'region' => fake()->randomElement([Region::West, Region::Littoral, Region::Centre]),
             'filieres' => fake()->randomElements(array_column(Filiere::cases(), 'value'), 3),
             'manager_id' => User::factory()->cooperative(),
         ];

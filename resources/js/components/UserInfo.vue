@@ -22,17 +22,16 @@ const showAvatar = computed(
 </script>
 
 <template>
-    <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
+    <Avatar class="h-8 w-8 overflow-hidden rounded-md">
         <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" />
-        <AvatarFallback class="rounded-lg text-black dark:text-white">
+        <AvatarFallback class="rounded-md bg-brand-100 text-brand-800">
             {{ getInitials(user.name) }}
         </AvatarFallback>
     </Avatar>
-
     <div class="grid flex-1 text-left text-sm leading-tight">
-        <span class="truncate font-medium">{{ user.name }}</span>
-        <span v-if="showEmail" class="truncate text-xs text-muted-foreground">{{
-            user.email
+        <span class="truncate font-semibold">{{ user.name }}</span>
+        <span class="truncate text-xs text-muted-foreground">{{
+            showEmail ? user.email : $t(`enums.user_role.${user.role}`)
         }}</span>
     </div>
 </template>

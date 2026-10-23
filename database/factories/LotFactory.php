@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\LotStep;
 use App\Models\Lot;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -25,9 +26,9 @@ class LotFactory extends Factory
             'harvest_date' => $harvestDate,
             'origin' => fake()->randomElement(['Dschang, Ouest', 'Penja, Littoral', 'Obala, Centre']),
             'steps' => [
-                ['label' => 'Récolte', 'date' => $harvestDate->format('Y-m-d'), 'location' => 'Parcelle du producteur'],
-                ['label' => 'Séchage', 'date' => (clone $harvestDate)->modify('+3 days')->format('Y-m-d'), 'location' => 'Aire de séchage'],
-                ['label' => 'Stockage', 'date' => (clone $harvestDate)->modify('+10 days')->format('Y-m-d'), 'location' => 'Magasin de la coopérative'],
+                ['label' => LotStep::Harvest->value, 'date' => $harvestDate->format('Y-m-d'), 'location' => 'Parcelle du producteur'],
+                ['label' => LotStep::Drying->value, 'date' => (clone $harvestDate)->modify('+3 days')->format('Y-m-d'), 'location' => 'Aire de séchage'],
+                ['label' => LotStep::Storage->value, 'date' => (clone $harvestDate)->modify('+10 days')->format('Y-m-d'), 'location' => 'Magasin de la coopérative'],
             ],
             'qr_path' => null,
         ];

@@ -42,11 +42,12 @@ onMounted(async () => {
     <Card class="w-full">
         <CardHeader>
             <CardTitle class="flex gap-3">
-                <LockKeyhole class="size-4" />2FA recovery codes
+                <LockKeyhole class="size-4" />{{
+                    $t('two_factor.recovery.title')
+                }}
             </CardTitle>
             <CardDescription>
-                Recovery codes let you regain access if you lose your 2FA
-                device. Store them in a secure password manager.
+                {{ $t('two_factor.recovery.description') }}
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,8 +59,11 @@ onMounted(async () => {
                         :is="isRecoveryCodesVisible ? EyeOff : Eye"
                         class="size-4"
                     />
-                    {{ isRecoveryCodesVisible ? 'Hide' : 'View' }} recovery
-                    codes
+                    {{
+                        isRecoveryCodesVisible
+                            ? $t('two_factor.recovery.hide')
+                            : $t('two_factor.recovery.view')
+                    }}
                 </Button>
 
                 <Form
@@ -75,7 +79,7 @@ onMounted(async () => {
                         type="submit"
                         :disabled="processing"
                     >
-                        <RefreshCw /> Regenerate codes
+                        <RefreshCw /> {{ $t('two_factor.recovery.regenerate') }}
                     </Button>
                 </Form>
             </div>
@@ -111,10 +115,7 @@ onMounted(async () => {
                         </div>
                     </div>
                     <p class="text-xs text-muted-foreground select-none">
-                        Each recovery code can be used once to access your
-                        account and will be removed after use. If you need more,
-                        click
-                        <span class="font-bold">Regenerate codes</span> above.
+                        {{ $t('two_factor.recovery.usage') }}
                     </p>
                 </div>
             </div>

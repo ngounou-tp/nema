@@ -22,8 +22,8 @@ test('two lots cannot share the same code', function () {
 
 test('traceability steps are stored in order', function () {
     $steps = [
-        ['label' => 'Récolte', 'date' => '2026-07-06', 'location' => 'Obala'],
-        ['label' => 'Fermentation', 'date' => '2026-07-07', 'location' => 'Obala'],
+        ['label' => 'harvest', 'date' => '2026-07-06', 'location' => 'Obala'],
+        ['label' => 'fermentation', 'date' => '2026-07-07', 'location' => 'Obala'],
     ];
 
     $lot = Lot::factory()->create(['steps' => $steps]);

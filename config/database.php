@@ -97,6 +97,11 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            // Neon's pooler (PgBouncer, transaction mode) aborts transactions that use
+            // PDO's server-side prepared statements: let PDO build the queries itself.
+            'options' => [
+                PDO::ATTR_EMULATE_PREPARES => true,
+            ],
         ],
 
         // Neon direct (non-pooled) endpoint, for migrations and other session-level work.

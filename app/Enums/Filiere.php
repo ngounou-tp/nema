@@ -2,19 +2,22 @@
 
 namespace App\Enums;
 
+/**
+ * Crop value chains. Stored as English keys, labelled per locale (lang/{fr,en}/enums.php).
+ */
 enum Filiere: string
 {
-    case Cacao = 'cacao';
-    case CafeArabica = 'cafe_arabica';
-    case CafeRobusta = 'cafe_robusta';
-    case Mais = 'mais';
-    case Manioc = 'manioc';
+    case Cacao = 'cocoa';
+    case CafeArabica = 'arabica_coffee';
+    case CafeRobusta = 'robusta_coffee';
+    case Mais = 'maize';
+    case Manioc = 'cassava';
     case Plantain = 'plantain';
-    case Banane = 'banane';
-    case Tomate = 'tomate';
-    case Arachide = 'arachide';
-    case Igname = 'igname';
-    case HuileDePalme = 'huile_de_palme';
+    case Banane = 'banana';
+    case Tomate = 'tomato';
+    case Arachide = 'groundnut';
+    case Igname = 'yam';
+    case HuileDePalme = 'palm_oil';
 
     /**
      * Translated label, in the current locale (lang/{fr,en}/enums.php).
